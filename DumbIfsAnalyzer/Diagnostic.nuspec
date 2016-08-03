@@ -2,25 +2,19 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>DumbIfsAnalyzer</id>
-    <version>1.0.0.0</version>
+    <version>1.0.0.1</version>
     <title>DumbIfsAnalyzer</title>
-    <authors>anton</authors>
-    <owners>anton</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <authors>Antonio Feregrino</authors>
+    <owners>Antonio Feregrino</owners>
+    <projectUrl>https://github.com/fferegrino/DumbIfsAnalyzer/</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>DumbIfsAnalyzer</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
-    <copyright>Copyright</copyright>
+    <copyright>MAKE CODE GREAT AGAIN 2016</copyright>
     <tags>DumbIfsAnalyzer, analyzers</tags>
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="System" targetFramework="" />
-    </frameworkAssemblies>
   </metadata>
   <!-- The convention for analyzers is to put language agnostic dlls in analyzers\portable50 and language specific analyzers in either analyzers\portable50\cs or analyzers\portable50\vb -->
   <files>
-    <file src="*.dll" target="analyzers\dotnet\cs" exclude="**\Microsoft.CodeAnalysis.*;**\System.Collections.Immutable.*;**\System.Reflection.Metadata.*;**\System.Composition.*" />
+	<file src="bin\Release\DumbIfsAnalyzer.dll" target="analyzers\dotnet\cs" />
     <file src="tools\*.ps1" target="tools\" />
   </files>
 </package>
