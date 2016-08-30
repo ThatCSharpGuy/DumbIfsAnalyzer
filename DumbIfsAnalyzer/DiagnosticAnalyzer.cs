@@ -50,9 +50,11 @@ namespace DumbIfsAnalyzer
         private bool? GetResult(ExpressionSyntax condition)
         {
             var literalExpression = condition as LiteralExpressionSyntax;
-            if (literalExpression != null)
+            if (literalExpression != null )
             {
-                return Boolean.Parse(literalExpression.Token.ToString());
+                bool value;
+                return Boolean.TryParse(literalExpression.Token.ToString(), out value)
+                    ? new bool?(value) : null;
             }
 
             var unaryExpresion = condition as PrefixUnaryExpressionSyntax;
