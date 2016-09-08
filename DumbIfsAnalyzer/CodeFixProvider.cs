@@ -60,49 +60,24 @@ namespace DumbIfsAnalyzer
             var semanticModel =
               await document.GetSemanticModelAsync(cancellationToken);
 
-            var ifResult = IfResultAnalyzer.GetResult(ifExpr.Condition);
-            if (!ifResult.HasValue)
-                return document;
+            var ifContent = ifExpr.Statement;
 
-            StatementSyntax ifContent;
-            if (ifResult.Value)
+            List<StatementSyntax> statements;
+            var blockStatementSyntax = ifContent as BlockSyntax;
+            if (blockStatementSyntax != null)
             {
-                ifContent = ifExpr.Statement;//.RemoveNode();
-            }
-            else if (ifExpr.Else != null)
-            {
-                ifContent = ifExpr.Else.Statement;
+                statements = blockStatementSyntax.Statements.ToList();
             }
             else
             {
-                ifContent = null;
+                statements = new List<StatementSyntax> {ifContent};
             }
+
+            var list = SyntaxFactory.List(statements);
 
             var root = await document.GetSyntaxRootAsync();
             SyntaxNode newRoot = null;
-
-            if (ifContent != null)
-            {
-                List<StatementSyntax> statements;
-                var blockStatementSyntax = ifContent as BlockSyntax;
-                if (blockStatementSyntax != null)
-                {
-                    statements = blockStatementSyntax.Statements.Select(stmn => stmn.WithoutLeadingTrivia()).ToList();
-                }
-                else
-                {
-                    statements = new List<StatementSyntax> { ifContent.WithoutLeadingTrivia() };
-                }
-
-                var list = SyntaxFactory.List(statements);
-
-                newRoot = root.ReplaceNode(ifExpr, list);
-            }
-            else
-            {
-                newRoot = root.RemoveNode(ifExpr, SyntaxRemoveOptions.KeepEndOfLine);
-            }
-
+            newRoot = root.ReplaceNode(ifExpr, list);
             var newDocument = document.WithSyntaxRoot(newRoot);
 
             return newDocument;
