@@ -8,12 +8,12 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace DumbIfsAnalyzer
+namespace UselessIfAnalyzer
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class DumbIfsAnalyzerAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "DumbIfs";
+        public const string DiagnosticId = "UselessIf";
 
         // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Localizing%20Analyzers.md for more on localization
@@ -37,67 +37,17 @@ namespace DumbIfsAnalyzer
         {
             var ifStatement = (IfStatementSyntax)context.Node;
 
-            var condigionalExpression = IsEvaluable(ifStatement.Condition, context.SemanticModel);
+            var condigionalExpression = IfResultAnalyzer.IsEvaluable(ifStatement.Condition, context.SemanticModel);
 
             if (condigionalExpression.HasValue)
             {
-                var diagnostic = Diagnostic.Create(Rule, ifStatement.Condition.GetLocation(), condigionalExpression);
+                var diagnostic = Diagnostic.Create(Rule, ifStatement.Condition.GetLocation(), condigionalExpression.Value);
                 context.ReportDiagnostic(diagnostic);
             }
 
         }
 
-        private static bool? IsEvaluable(ExpressionSyntax condition, SemanticModel semanticModel)
-        {
-            var binaryExpression = condition as BinaryExpressionSyntax;
-            if (binaryExpression == null) return false;
-
-            var literal = binaryExpression.Left as LiteralExpressionSyntax ?? binaryExpression.Right as LiteralExpressionSyntax;
-            if (literal == null)
-                return null;
-
-            IdentifierNameSyntax identifier = null;
-
-            var member = binaryExpression.Left as MemberAccessExpressionSyntax ?? binaryExpression.Right as MemberAccessExpressionSyntax;
-            if (member != null)
-            {
-                var nodes = member.ChildNodes().ToList();
-
-                if (nodes.Count == 2)
-                {
-                    identifier = nodes[1] as IdentifierNameSyntax;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                identifier = binaryExpression.Left as IdentifierNameSyntax ?? binaryExpression.Right as IdentifierNameSyntax;
-            }
-
-            if (identifier == null)
-                return null;
-
-            var info = semanticModel.GetTypeInfo(identifier);
-            if (info.Type == null)
-                return null;
-
-            if (literal.IsKind(SyntaxKind.NullLiteralExpression) && !info.Type.IsReferenceType)
-            {
-                if(binaryExpression.IsKind(SyntaxKind.EqualsExpression))
-                {
-                    return false;
-                }
-                else if (binaryExpression.IsKind(SyntaxKind.NotEqualsExpression))
-                {
-                    return true;
-                }
-            }
-
-            return null;
-        }
+        
 
     }
 }

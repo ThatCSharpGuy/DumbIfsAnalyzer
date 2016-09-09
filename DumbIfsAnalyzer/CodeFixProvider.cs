@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DumbIfsAnalyzer
+namespace UselessIfAnalyzer
 {
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(RemoveUselessIfCodeProvider)), Shared]
     public sealed class RemoveUselessIfCodeProvider : CodeFixProvider
@@ -54,30 +54,40 @@ namespace DumbIfsAnalyzer
         }
 
         private async Task<Document> FixIfStatement(Document document,
-      IfStatementSyntax ifExpr,
+      IfStatementSyntax ifStatement,
       CancellationToken cancellationToken)
         {
-            var semanticModel =
-              await document.GetSemanticModelAsync(cancellationToken);
+            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
-            var ifContent = ifExpr.Statement;
+            var ifContent = ifStatement.Statement;
+            var elseContent = ifStatement?.Else?.Statement;
+            var condigionalExpression = IfResultAnalyzer.IsEvaluable(ifStatement.Condition, semanticModel);
 
             List<StatementSyntax> statements;
-            var blockStatementSyntax = ifContent as BlockSyntax;
+            var blockStatementSyntax = (condigionalExpression.Value ? ifContent : elseContent) as BlockSyntax;
             if (blockStatementSyntax != null)
             {
                 statements = blockStatementSyntax.Statements.ToList();
             }
             else
             {
-                statements = new List<StatementSyntax> {ifContent};
+                statements = new List<StatementSyntax> { (condigionalExpression.Value ? ifContent : elseContent) };
             }
 
-            var list = SyntaxFactory.List(statements);
 
-            var root = await document.GetSyntaxRootAsync();
             SyntaxNode newRoot = null;
-            newRoot = root.ReplaceNode(ifExpr, list);
+            var root = await document.GetSyntaxRootAsync();
+            // No else
+            if (statements != null && !statements.Any(s => s == null))
+            {
+                var list = SyntaxFactory.List(statements);
+                newRoot = root.ReplaceNode(ifStatement, list);
+            }
+            else
+            {
+                newRoot = root.RemoveNode(ifStatement, SyntaxRemoveOptions.KeepNoTrivia);
+            }
+
             var newDocument = document.WithSyntaxRoot(newRoot);
 
             return newDocument;

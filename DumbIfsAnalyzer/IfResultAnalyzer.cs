@@ -7,47 +7,63 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DumbIfsAnalyzer
+namespace UselessIfAnalyzer
 {
     public static class IfResultAnalyzer
     {
-        public static bool? GetResult(ExpressionSyntax condition)
+        public static bool? IsEvaluable(ExpressionSyntax condition, SemanticModel semanticModel)
         {
-            var literalExpression = condition as LiteralExpressionSyntax;
-            if (literalExpression != null)
-            {
-                bool value;
-                return Boolean.TryParse(literalExpression.Token.ToString(), out value)
-                    ? new bool?(value) : null;
-            }
-
-            var unaryExpresion = condition as PrefixUnaryExpressionSyntax;
-            if (unaryExpresion != null && unaryExpresion.IsKind(SyntaxKind.LogicalNotExpression))
-            {
-                var operandResult = GetResult(unaryExpresion.Operand);
-                if (operandResult.HasValue)
-                {
-                    return !operandResult.Value;
-                }
-                return null;
-            }
-
-
             var binaryExpression = condition as BinaryExpressionSyntax;
             if (binaryExpression == null) return null;
 
-            var right = GetResult(binaryExpression.Right);
-            var left = GetResult(binaryExpression.Left);
+            var literal = binaryExpression.Left as LiteralExpressionSyntax ?? binaryExpression.Right as LiteralExpressionSyntax;
+            if (literal == null)
+                return null;
 
-            if (right.HasValue && left.HasValue)
+            IdentifierNameSyntax identifier = null;
+
+            var member = binaryExpression.Left as MemberAccessExpressionSyntax ?? binaryExpression.Right as MemberAccessExpressionSyntax;
+            if (member != null)
             {
-                if (binaryExpression.IsKind(SyntaxKind.LogicalAndExpression))
+                var nodes = member.ChildNodes().ToList();
+
+                if (nodes.Count == 2)
                 {
-                    return right.Value && left.Value;
+                    identifier = nodes[1] as IdentifierNameSyntax;
                 }
-                else if (binaryExpression.IsKind(SyntaxKind.LogicalOrExpression))
+                else
                 {
-                    return right.Value || left.Value;
+                    return null;
+                }
+            }
+            else
+            {
+                identifier = binaryExpression.Left as IdentifierNameSyntax ?? binaryExpression.Right as IdentifierNameSyntax;
+            }
+
+            if (identifier == null)
+                return null;
+
+            var info = semanticModel.GetTypeInfo(identifier);
+            var typeInfo = info.Type as INamedTypeSymbol;
+            if (info.Type == null )
+                return null;
+            
+
+            var nullableType = semanticModel.Compilation.GetTypeByMetadataName("System.Nullable`1");
+
+            if (typeInfo.ConstructedFrom.Equals(nullableType))
+                return null;
+
+            if (literal.IsKind(SyntaxKind.NullLiteralExpression) && !info.Type.IsReferenceType)
+            {
+                if (binaryExpression.IsKind(SyntaxKind.EqualsExpression))
+                {
+                    return false;
+                }
+                else if (binaryExpression.IsKind(SyntaxKind.NotEqualsExpression))
+                {
+                    return true;
                 }
             }
 

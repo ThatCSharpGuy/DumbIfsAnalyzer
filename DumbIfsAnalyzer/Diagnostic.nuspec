@@ -12,9 +12,9 @@
     <copyright>MAKE CODE GREAT AGAIN 2016</copyright>
     <tags>UselessIfAnalyzer, analyzers</tags>
   </metadata>
-  <!-- The convention for analyzers is to put language agnostic dlls in analyzers\portable50 and language specific analyzers in either analyzers\portable50\cs or analyzers\portable50\vb -->
+  
   <files>
-	<file src="bin\Release\DumbIfsAnalyzer.dll" target="analyzers\dotnet\cs" />
+	<file src="bin\Release\UselessIfAnalyzer.dll" target="analyzers\dotnet\cs" />
     <file src="tools\*.ps1" target="tools\" />
   </files>
 </package>

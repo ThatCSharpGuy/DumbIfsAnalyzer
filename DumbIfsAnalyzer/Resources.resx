@@ -122,11 +122,11 @@
     <comment>Regex patterns should be syntactically valid.</comment>
   </data>
   <data name="AnalyzerMessageFormat" xml:space="preserve">
-    <value>The value of this expression is always '{0}'</value>
+    <value>The value of this expression is always '{0}', a valye type can never be null.</value>
     <comment>Regex error {0}</comment>
   </data>
   <data name="AnalyzerTitle" xml:space="preserve">
-    <value>This is a constant expression</value>
+    <value>Check value type comparing against null</value>
     <comment>Regex error parsing string argument</comment>
   </data>
 </root>

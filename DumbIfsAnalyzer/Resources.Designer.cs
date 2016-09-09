@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DumbIfsAnalyzer {
+namespace UselessIfAnalyzer {
     using System;
     using System.Reflection;
     
@@ -40,7 +40,7 @@ namespace DumbIfsAnalyzer {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DumbIfsAnalyzer.Resources", typeof(Resources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("UselessIfAnalyzer.Resources", typeof(Resources).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -71,7 +71,7 @@ namespace DumbIfsAnalyzer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The value of this expression is always &apos;{0}&apos;.
+        ///   Looks up a localized string similar to The value of this expression is always &apos;{0}&apos;, a valye type can never be null..
         /// </summary>
         internal static string AnalyzerMessageFormat {
             get {
@@ -80,7 +80,7 @@ namespace DumbIfsAnalyzer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This is a constant expression.
+        ///   Looks up a localized string similar to Check value type comparing against null.
         /// </summary>
         internal static string AnalyzerTitle {
             get {
