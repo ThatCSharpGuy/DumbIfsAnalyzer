@@ -37,7 +37,7 @@ namespace UselessIfAnalyzer
         {
             var ifStatement = (IfStatementSyntax)context.Node;
 
-            var condigionalExpression = IfResultAnalyzer.IsEvaluable(ifStatement.Condition, context.SemanticModel);
+            var condigionalExpression = IfResultAnalyzer.IsEvaluable(ifStatement, context.SemanticModel);
 
             if (condigionalExpression.HasValue)
             {
@@ -46,8 +46,5 @@ namespace UselessIfAnalyzer
             }
 
         }
-
-        
-
     }
 }

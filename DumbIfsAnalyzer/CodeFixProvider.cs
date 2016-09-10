@@ -61,7 +61,7 @@ namespace UselessIfAnalyzer
 
             var ifContent = ifStatement.Statement;
             var elseContent = ifStatement?.Else?.Statement;
-            var condigionalExpression = IfResultAnalyzer.IsEvaluable(ifStatement.Condition, semanticModel);
+            var condigionalExpression = IfResultAnalyzer.IsEvaluable(ifStatement, semanticModel);
 
             List<StatementSyntax> statements;
             var blockStatementSyntax = (condigionalExpression.Value ? ifContent : elseContent) as BlockSyntax;
@@ -77,6 +77,8 @@ namespace UselessIfAnalyzer
 
             SyntaxNode newRoot = null;
             var root = await document.GetSyntaxRootAsync();
+
+            
             // No else
             if (statements != null && !statements.Any(s => s == null))
             {

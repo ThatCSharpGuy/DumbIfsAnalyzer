@@ -11,22 +11,29 @@ namespace UselessIfAnalyzer
 {
     public static class IfResultAnalyzer
     {
-        public static bool? IsEvaluable(ExpressionSyntax condition, SemanticModel semanticModel)
+        public static bool? IsEvaluable(IfStatementSyntax @if, SemanticModel semanticModel)
         {
+            var condition = @if.Condition;
+
+            // Process only simple ifs
+            if (@if.Parent.IsKind(SyntaxKind.ElseClause))
+                return null;
+
+            // Find if the "if" condition is a simple binary expression
             var binaryExpression = condition as BinaryExpressionSyntax;
             if (binaryExpression == null) return null;
 
+            // Find if one of the parts is a literal
             var literal = binaryExpression.Left as LiteralExpressionSyntax ?? binaryExpression.Right as LiteralExpressionSyntax;
-            if (literal == null)
-                return null;
+            if (literal == null) return null;
 
             IdentifierNameSyntax identifier = null;
 
+            // Find if one of the parts is a member expression
             var member = binaryExpression.Left as MemberAccessExpressionSyntax ?? binaryExpression.Right as MemberAccessExpressionSyntax;
             if (member != null)
             {
                 var nodes = member.ChildNodes().ToList();
-
                 if (nodes.Count == 2)
                 {
                     identifier = nodes[1] as IdentifierNameSyntax;
@@ -41,6 +48,7 @@ namespace UselessIfAnalyzer
                 identifier = binaryExpression.Left as IdentifierNameSyntax ?? binaryExpression.Right as IdentifierNameSyntax;
             }
 
+            // if no identifier is found, return null
             if (identifier == null)
                 return null;
 
