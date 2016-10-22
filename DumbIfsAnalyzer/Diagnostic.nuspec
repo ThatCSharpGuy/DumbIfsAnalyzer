@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <id>UselessIfAnalyzer</id>
+    <id>DumbIfsAnalyzer</id>
     <version>1.0.0.1</version>
-    <title>UselessIfAnalyzer</title>
+    <title>DumbIfsAnalyzer</title>
     <authors>Antonio Feregrino</authors>
     <owners>Antonio Feregrino</owners>
     <projectUrl>https://github.com/fferegrino/DumbIfsAnalyzer/</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>UselessIfAnalyzer</description>
+    <description>DumbIfsAnalyzer</description>
     <copyright>MAKE CODE GREAT AGAIN 2016</copyright>
-    <tags>UselessIfAnalyzer, analyzers</tags>
+    <tags>DumbIfsAnalyzer, analyzers</tags>
   </metadata>
   <!-- The convention for analyzers is to put language agnostic dlls in analyzers\portable50 and language specific analyzers in either analyzers\portable50\cs or analyzers\portable50\vb -->
   <files>

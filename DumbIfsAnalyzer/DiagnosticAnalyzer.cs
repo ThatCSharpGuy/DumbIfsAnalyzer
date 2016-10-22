@@ -37,66 +37,14 @@ namespace DumbIfsAnalyzer
         {
             var ifStatement = (IfStatementSyntax)context.Node;
 
-            var condigionalExpression = IsEvaluable(ifStatement.Condition, context.SemanticModel);
+            bool? expressionValue = IfResultAnalyzer.GetResult(ifStatement.Condition);
 
-            if (condigionalExpression.HasValue)
+            if (expressionValue.HasValue)
             {
-                var diagnostic = Diagnostic.Create(Rule, ifStatement.Condition.GetLocation(), condigionalExpression);
+                var diagnostic = Diagnostic.Create(Rule, ifStatement.Condition.GetLocation(), expressionValue.Value);
                 context.ReportDiagnostic(diagnostic);
             }
 
-        }
-
-        private static bool? IsEvaluable(ExpressionSyntax condition, SemanticModel semanticModel)
-        {
-            var binaryExpression = condition as BinaryExpressionSyntax;
-            if (binaryExpression == null) return false;
-
-            var literal = binaryExpression.Left as LiteralExpressionSyntax ?? binaryExpression.Right as LiteralExpressionSyntax;
-            if (literal == null)
-                return null;
-
-            IdentifierNameSyntax identifier = null;
-
-            var member = binaryExpression.Left as MemberAccessExpressionSyntax ?? binaryExpression.Right as MemberAccessExpressionSyntax;
-            if (member != null)
-            {
-                var nodes = member.ChildNodes().ToList();
-
-                if (nodes.Count == 2)
-                {
-                    identifier = nodes[1] as IdentifierNameSyntax;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                identifier = binaryExpression.Left as IdentifierNameSyntax ?? binaryExpression.Right as IdentifierNameSyntax;
-            }
-
-            if (identifier == null)
-                return null;
-
-            var info = semanticModel.GetTypeInfo(identifier);
-            if (info.Type == null)
-                return null;
-
-            if (literal.IsKind(SyntaxKind.NullLiteralExpression) && !info.Type.IsReferenceType)
-            {
-                if(binaryExpression.IsKind(SyntaxKind.EqualsExpression))
-                {
-                    return false;
-                }
-                else if (binaryExpression.IsKind(SyntaxKind.NotEqualsExpression))
-                {
-                    return true;
-                }
-            }
-
-            return null;
         }
 
     }
